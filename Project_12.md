@@ -378,6 +378,10 @@ Name the folder as updates and click on the check mar to commit.
 
 ![Source Control_1](./Images/Source%20Control_1.png)
 
+Click on since changes.
+
+
+
 
  We need to point the ansible configuration file to inventory directory.
 
