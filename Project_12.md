@@ -48,8 +48,9 @@ Run `ls`
 
 Run the code below. You will need to repeat the steps below if you turned off your systems.
 
- ```
+```
 eval `ssh-agent -s`
+
 ```
 
 It will show the agent PID
@@ -124,6 +125,14 @@ Now going back to the first step, run the command below to create a new director
     You can go to file explorer and create a folder for `ansible-config-artifact` under DKWORKSPACE. This will be displayed on the left side under DKWORKSPACE.
 
    ![ansible-config-artifact1](./Images/ansible-config-artifact1.png)
+
+   `cd ansible-config-artifact`
+
+   ![Directory change 4](./Images/directory%20change%204.png)
+
+
+
+
 
 
 
@@ -217,9 +226,31 @@ Now going back to the first step, run the command below to create a new director
 
    We configured the number of build to 2. This is useful because whenever the jenkins pipeline runs, it creates a directory for the artifacts and it takes alot of space. By specifying the number of build, we can choose to keep only 2 of the latest builds and discard the rest.
 
-6. Test your set up by making some change in README.MD file inside your ansible-config-mgt repository (right inside main branch).
+6. The main idea of save_artifacts project is to save artifacts into /home/ubuntu/ansible-config-artifact directory. To achieve this, create a Build step and choose Copy artifacts from other project, specify ansible as a source project and /home/ubuntu/ansible-config-artifact as a target directory.
 
-   To do this , login to Github.
+   Click Add build step > Copy artifacts from another project 
+
+   Project name : ansible
+
+   Artifacts to copy: **
+
+   Target Directory: /home/ubuntu/ansible-config-artifact
+
+   Apply then Save
+
+   ![Configuration 5](./Images/Configuration%205.png)
+
+
+
+
+
+
+
+7. Test your set up by making some change in README.MD file inside your ansible-config-mgt repository (right inside main branch).
+
+
+
+   Login to github
 
    ![Test changes](./Images/Test%20changes.png)
 
@@ -227,7 +258,7 @@ Now going back to the first step, run the command below to create a new director
 
    ![Test changes](./Images/Test%20changes.png)
 
-   Ensure that yiou are under the main branch and click on READ.md file
+   Ensure that you are under the main branch and click on READ.md file
 
    ![Test changes 1](./Images/Test%20changes%201.png)
 
@@ -241,15 +272,16 @@ Now going back to the first step, run the command below to create a new director
 
 
 
-   Go back under code, click on Edit and make a change at the bottom. I just added : Testing changes for project 12 - March 15, 2023.
+   Go back under code, click on Edit and make a change at the bottom. I just added : Testing changes for project 12 - March 24, 2023.
 
-   ![Test changes 2](./Images/Test%20changes%202.png)
+   ![testing Changes 1](./Images/Testing%20changes%201.png)
 
-   Click on Commit changes.
+   Click commit changes
 
-   ![Test changes 3](./Images/Test%20changes%203.png)
+   ![Testing changes 2](./Images/Testing%20changes%202.png)
 
-   It will show build # 1 created.
+
+   It will show build # 5 and 6 created.
 
    ![test changes 4](./Images/Test%20changes%204.png)
 
@@ -353,35 +385,8 @@ update site.yml with - import_playbook: ../static-assignments/common-del.yml ins
 
 ![common-del.yml](./Images/common-del.yml.png)
 
-Go to powershell terminal and change directory to ansible-config-mgt.
 
-`cd ansible-config-mgt`
-
-![Directory change](./Images/Directory%20change.png)
-
-Run `git status`
-
-![Git status](./Images/Git%20status.png)
-
-
-Run `git pull`
-
-![Git pull](./Images/Git%20pull.png)
-
-
-Click on the Source Control - pending changes. It currently shows 60.
-
-
-![Source Control](./Images/Source%20Control.png)
-
-Name the folder as updates and click on the check mar to commit.
-
-![Source Control_1](./Images/Source%20Control_1.png)
-
-Click on since changes.
-
-
-
+ Ensure that that you are in ansible-config-artifact directory.
 
  We need to point the ansible configuration file to inventory directory.
 
@@ -398,6 +403,489 @@ Click on since changes.
  copy the path as shown below;
 
  /home/ubuntu/ansible-config-artifact/inventory
+
+
+ Run 
+ `sudo vi /etc/ansible/ansible.cfg`
+
+ The screen below will be displayed.
+
+ ![ansible.cfg](./Images/ansible.cfg.png)
+
+
+ Use i to insert. Replace what is defaulted under inventory with the path below.
+
+ /home/ubuntu/ansible-config-artifact/inventory
+
+ Then remove the # to uncomment it.
+
+ The save with Esc > :wq!
+
+ ![inventory](./Images/Inventory.png)
+
+
+ Check if you can reach the servers.
+
+ `ansible all -m ping`
+
+ The screen below show that servers are reacheable.
+
+ ![Ping servers](./Images/Ping%20servers.png)
+
+
+ Open another Git bash terminal and change directory to ansible-config-mgt.
+
+`cd ansible-config-mgt`
+
+![Directory change](./Images/Directory%20change.png)
+
+Run `git status`
+
+![Git status](./Images/Git%20status.png)
+
+
+Run `git pull`
+
+![Git pull](./Images/Git%20pull.png)
+
+
+Run `git add .`
+
+![Git add](./Images/Git%20add.png)
+
+
+Run `git commit -m "Working on Project 12"`
+
+![Git commit](./Images/Git%20commit.png)
+
+
+Run `git push`
+
+![Git push](./Images/Git%20push.png)
+
+
+
+Go back to the previous Git bash terminal and change directory to  ansible-config-artifacts if you are not there.
+
+ `cd ansible-config-artifact`
+
+ ![Directory change2](./Images/Directory%20change2.png)
+
+ Run `ls playbooks`. It will show site.yml file.
+
+ ![ls playbooks](./Images/ls%20playbooks.png)
+
+ Run the ansible playbook below.
+
+ `ansible-playbook -i /home/ubuntu/ansible-config-artifact/inventory/dev.yml /home/ubuntu/ansible-config-artifact/playbooks/site.yml`
+
+ ![ansible playbook](./Images/ansible%20playbook.png)
+
+
+ The screens below will show that the playbook run successfully.
+
+
+ ![ansible playbook1](./Images/ansible%20playbook1.png)
+
+ ![ansible playbook2](./Images/ansible%20playbook2.png)
+
+ ![ansible playbook3](./Images/ansible%20playbook3.png)
+
+
+ Make sure that wireshark is deleted on all the servers by running wireshark --version
+
+Now you have learned how to use import_playbooks module and you have a ready solution to install/delete packages on multiple servers with just one command.
+
+To check and confirm that Wireshark have been deleted, get the private IP fo any of the servers and run the command below to connect to the server. We will use one of the web servers.
+
+`ssh ec2-user@172.31.45.251`
+
+![Delete wireshark](./Images/Delete%20wireshark_1.png)
+
+Run `which wireshark`
+
+It will show that there is nop wireshark
+
+![Delete wireshark_2](./Images/Delete%20wireshark_2.png)
+
+You can also run;
+
+`wireshark --version`
+
+![Delete wireshark_3](./Images/Delete%20wireshark_3.png)
+
+exit
+
+We need to create a branch. We should have created it earlier.
+
+- Open a new git bash.
+
+  ![Git bash](./Images/Git%20bash%204.png)
+
+- Change directory to ansible-config-mgt.
+
+   `cd ansible-config-mgt`
+
+   ![Directory Change](./Images/Directory%20change3.png)
+
+- Run `git status`
+
+   It will show that the branch is upto date.
+
+   ![git status 1](./Images/Git%20status%201.png)
+
+   To create a new branch called refactor, run the command below.
+
+   `git checkout -b refactor`
+
+   ![Create refactor branch](./Images/Create%20refactor%20branch.png)
+
+
+
+   ## CONFIGURE UAT WEBSERVERS WITH A ROLE ‘WEBSERVER’
+
+   - ## Step 3 – Configure UAT Webservers with a role ‘Webserver’
+      We have our nice and clean dev environment, so let us put it aside and configure 2 new Web Servers as uat. We could write tasks to configure Web Servers in the same playbook, but it would be too messy, instead, we will use a dedicated role to make our configuration reusable.
+
+   1. Launch 2 fresh EC2 instances using RHEL 8 image, we will use them as our uat servers, so give them names accordingly – Web1-UAT and Web2-UAT.
+
+
+      ![Web UAT Servers](./Images/Web%20UAT%20Servers.png)
+
+      Tip: Do not forget to stop EC2 instances that you are not using at the moment to avoid paying extra. For now, you only need 2 new RHEL 8 servers as Web Servers and 1 existing Jenkins-Ansible server up and running.
+
+   2. To create a role, you must create a directory called roles/, relative to the playbook file or in /etc/ansible/ directory.
+
+      There are two ways how you can create this folder structure:
+
+   -  Use an Ansible utility called ansible-galaxy inside ansible-config-mgt/roles directory (you need to create roles directory upfront)
+
+      `mkdir roles`
+
+      `cd roles`
+
+      `ansible-galaxy init webserver`
+
+   - Create the directory/files structure manually.
+
+
+   *Note*: You can choose either way, but since you store all your codes in GitHub, it is recommended to create folders and files there rather than locally on Jenkins-Ansible server.
+
+   The entire folder structure should look like below, but if you create it manually – you can skip creating tests, files, and vars or remove them if you used ansible-galaxy.
+
+   ![Folder structure](./Images/Folder%20structure%201.png)
+
+   In our case we will create the folders manually as shown below.
+
+   ![Folder Structure 2](./Images/Folder%20structure%202.png)
+
+3. Update your inventory ansible-config-mgt/inventory/uat.yml file with IP addresses of your 2 UAT Web servers
+
+   NOTE: Ensure you are using ssh-agent to ssh into the Jenkins-Ansible instance just as you have done in project 11;
+
+   Note the 2 Private IP addresses for the web servers;
+
+   Web1-UAT - 172.31.8.180
+   Web2-UAT - 172.31.6.179
+
+   ```
+   [uat-webservers]
+   <Web1-UAT-Server-Private-IP-Address> ansible_ssh_user='ec2-user' 
+
+   <Web2-UAT-Server-Private-IP-Address> ansible_ssh_user='ec2-user'
+   ```
+
+   After replacing the the IP addresses, it will look like this below;
+
+   ```
+   [uat-webservers]
+   172.31.8.180 ansible_ssh_user='ec2-user' 
+
+   172.31.6.179 ansible_ssh_user='ec2-user' 
+   ```
+
+   Click on uat.yml under inventory folder.
+
+   ![uat.yml](./Images/uat.yml.png)
+
+   Input the uat servers information mentioned above to uat.yml.
+
+   ![uat.yml 1](./Images/uat.yml%201.png)
+
+4. In /etc/ansible/ansible.cfg file uncomment roles_path string and provide a full path to your roles directory roles_path    = /home/ubuntu/ansible-config-artifact/roles, so Ansible could know where to find configured roles.
+
+   Run the command below under the ansible-config-artifact directory.
+
+   `sudo vi /etc/ansible/ansible.cfg`
+
+   ![ansible cfg file](./Images/ansible%20cfg%20file.png)
+
+   Scroll to roles_path string and uncomment it and provide a fule path to the roles directory. Click i for insert and look for it.
+
+   ![ansible cfg file2](./Images/ansible%20cfg%20file2.png)
+
+   ![ansible cfg file 3](./Images/ansible%20cfg%20file3.png)
+
+   Save and exit by;
+
+   Esc > :wq!
+
+
+
+
+
+5. It is time to start adding some logic to the webserver role. Go into tasks directory, and within the main.yml file, start writing configuration tasks to do the following:
+
+- Install and configure Apache (httpd service)
+- Clone Tooling website from GitHub https://github.com/<your-name>/tooling.git.
+- Ensure the tooling website code is deployed to /var/www/html on each of 2 UAT Web servers.
+- Make sure httpd service is started
+
+Your main.yml may consist of following tasks:
+
+```
+---
+- name: install apache
+  become: true
+  ansible.builtin.yum:
+    name: "httpd"
+    state: present
+
+- name: install git
+  become: true
+  ansible.builtin.yum:
+    name: "git"
+    state: present
+
+- name: clone a repo
+  become: true
+  ansible.builtin.git:
+    repo: https://github.com/<your-name>/tooling.git
+    dest: /var/www/html
+    force: yes
+
+- name: copy html content to one level up
+  become: true
+  command: cp -r /var/www/html/html/ /var/www/
+
+- name: Start service httpd, if not started
+  become: true
+  ansible.builtin.service:
+    name: httpd
+    state: started
+
+- name: recursively remove /var/www/html/html/ directory
+  become: true
+  ansible.builtin.file:
+    path: /var/www/html/html
+    state: absent
+```
+
+replace the relevant information as shown below.
+
+```
+---
+- name: install apache
+  become: true
+  ansible.builtin.yum:
+    name: "httpd"
+    state: present
+
+- name: install git
+  become: true
+  ansible.builtin.yum:
+    name: "git"
+    state: present
+
+- name: clone a repo
+  become: true
+  ansible.builtin.git:
+    repo: https://github.com/MKDKSZAKOLWA/tooling.git
+    dest: /var/www/html
+    force: yes
+
+- name: copy html content to one level up
+  become: true
+  command: cp -r /var/www/html/html/ /var/www/
+
+- name: Start service httpd, if not started
+  become: true
+  ansible.builtin.service:
+    name: httpd
+    state: started
+
+- name: recursively remove /var/www/html/html/ directory
+  become: true
+  ansible.builtin.file:
+    path: /var/www/html/html
+    state: absent
+```
+
+Copy it to main.yml under tasks folder.
+
+
+![main.yml](./Images/main.yml.png)
+
+## REFERENCE WEBSERVER ROLE
+
+   ## Step 4 – Reference ‘Webserver’ role
+
+Within the static-assignments folder, create a new assignment for uat-webservers uat-webservers.yml. This is where you will reference the role.
+
+```
+---
+- hosts: uat-webservers
+  roles:
+     - webserver
+```
+
+Remember that the entry point to our ansible configuration is the site.yml file. Therefore, you need to refer your uat-webservers.yml role inside site.yml.
+
+So, we should have this in site.yml
+
+```
+---
+- hosts: all
+- import_playbook: ../static-assignments/common-del.yml
+
+- hosts: uat-webservers
+- import_playbook: ../static-assignments/uat-webservers.yml
+```
+
+To do this click on sit.yml.
+
+![site.yml 1](./Images/site.yml%201.png)
+
+Copy the uat-webservers.yml role inside site.yml.
+
+![site.yml 2](./Images/site.yml%202.png)
+
+
+## Step 5 – Commit & Test
+
+Commit your changes, create a Pull Request and merge them to master branch, make sure webhook triggered two consequent Jenkins jobs, they ran successfully and copied all the files to your Jenkins-Ansible server into /home/ubuntu/ansible-config-mgt/ directory.
+
+- Run `git status`. Make sure you are on the refactor branch.
+
+   ![git status 2](./Images/Git%20status%202.png)
+
+   Glick the Source Control on the left and click commit.
+
+   ![Source Control 3](./Images/Source%20Control%203.png)
+
+
+
+Switch branch ;
+
+`git switch main`
+
+   Run `git pull`
+
+![Git pull](./Images/git%20pull%201.png)
+
+
+Run `git add .`
+
+![Git add 1](./Images/git%20add%201.png)
+
+
+Run `git commit -m "Making changes on Project 12"`
+
+![Git commit 1](./Images/Git%20commit%201.png)
+
+
+Run `git push`
+
+![Git push 1](./Images/git%20push%201.png)
+
+
+
+Now run the playbook against your uat inventory and see what happens:
+
+`ansible-playbook -i /home/ubuntu/ansible-config-artifact/inventory/uat.yml /home/ubuntu/ansible-config-artifact/playbooks/site.yml`
+
+The screens below will be displayed.
+
+![Ansible playbook5](./Images/ansible%20playbook5.png)
+
+![Ansible playbook6](./Images/ansible%20playbook6.png)
+
+
+
+You should be able to see both of your UAT Web servers configured and you can try to reach them from your browser:
+
+`http://<Web1-UAT-Server-Public-IP-or-Public-DNS-Name>/index.php`
+
+`http://18.218.157.10/index.php`
+
+
+![Probitix Tooling](./Images/Probitix%20Tooling.png)
+
+or
+
+`http://<Web1-UAT-Server-Public-IP-or-Public-DNS-Name>/index.php`
+
+`http://18.216.15.225/index.php`
+
+![Probitix Tooling2](./Images/Probitix%20Tooling2.png)
+
+Your Ansible architecture now looks like this:
+
+![Updated Architecture](./Images/Updated%20Architecture.png)
+
+![Updated Architecture2](./Images/Updated%20Architecture2.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
